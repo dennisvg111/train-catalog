@@ -50,7 +50,8 @@
   <ItemGroup>
     <Compile Include="CatalogClient.cs" />
     <Compile Include="CatalogInfo.cs" />
-    <Compile Include="CatalogListClient.cs" />
+    <Compile Include="FolderUtilities.cs" />
+    <Compile Include="ImageFile.cs" />
     <Compile Include="SiteClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

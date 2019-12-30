@@ -19,7 +19,7 @@ namespace WPE.Trains.Forms
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            CatalogListClient catalogListClient = new CatalogListClient();
+            CatalogClient catalogListClient = new CatalogClient("fleischmann_katalogservice");
             var catalogs = catalogListClient.GetCatalogList();
 
             int y = 0;
@@ -44,9 +44,6 @@ namespace WPE.Trains.Forms
                 description.Anchor = AnchorStyles.Left;
                 catalogListContainer.Controls.Add(description);
             }
-
-            CatalogClient client = new CatalogClient();
-            client.GetCatalogImages();
         }
     }
 }
