@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,7 +68,7 @@ namespace WPE.Trains
                         catalogs.Add(catalog);
                         FolderUtilities.SaveCatalogInfo(this.catalogListName, catalog);
                     }
-                }                
+                }
             }
             foreach (var catalog in catalogs)
             {
@@ -77,27 +78,188 @@ namespace WPE.Trains
             return catalogs;
         }
 
-        public void GetCatalogImages(string catalogIdentifier)
+        public List<CatalogImage> GetCatalogImages(string catalogIdentifier)
         {
-            var document = DownloadHtmlDocument($"content/katalog/{catalogIdentifier}.html");
-            var documentNode = document.DocumentNode;
-
-            var highRes = documentNode.SelectSingleNode(".//*[contains(@class, 'high-res')]");
-            if (highRes != null)
+            List<CatalogImage> images = FolderUtilities.GetCatalogImages(this.catalogListName, catalogIdentifier).ToList();
+            HtmlDocument document = null;
+            try
             {
-                var imageNodes = highRes.SelectNodes(".//*[@data-lightbox]");
-                foreach (var node in imageNodes)
+                document = DownloadHtmlDocument($"content/katalog/{catalogIdentifier}.html");
+            }
+            catch (Exception)
+            {
+                document = null;
+            }
+            if (document != null)
+            {
+                var documentNode = document.DocumentNode;
+
+                var highResNodes = documentNode.SelectNodes(".//*[contains(@class, 'high-res')]");
+                if (highResNodes != null)
                 {
-                    var thumbnailUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
-                    thumbnailUrl = "https://www.conradantiquario.de/" + thumbnailUrl;
+                    foreach (var highRes in highResNodes)
+                    {
+                        var imageNodes = highRes.SelectNodes(".//*[@data-lightbox]");
+                        foreach (var node in imageNodes)
+                        {
+                            var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
+                            imageUrl = "https://www.conradantiquario.de/" + imageUrl;
+                            CatalogImage image = new CatalogImage()
+                            {
+                                ImageUrl = imageUrl
+                            };
+                            if (images.Any(i => image.GetFilename() == i.GetFilename()))
+                            {
+                                continue;
+                            }
+                            bool inserted = false;
+                            if (image.GetImageNumberFromFilename() > 0)
+                            {
+                                var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
+                                if (imageBefore != null)
+                                {
+                                    images.Insert(images.IndexOf(imageBefore) + 1, image);
+                                    inserted = true;
+                                }
+                            }
+                            if (!inserted)
+                            {
+                                images.Add(image);
+                            }
+                            string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
+                            image.ImageUrl = newImagePath;
+
+                        }
+                    }
+                }
+
+                if (images.Count == 0)
+                {
+                    var articleNodes = document.DocumentNode.SelectNodes("//article");
+                    if (articleNodes != null)
+                    {
+                        foreach (var articleNode in articleNodes)
+                        {
+                            var imageNodes = articleNode.SelectNodes(".//*[@data-lightbox]");
+                            if (imageNodes != null)
+                            {
+                                foreach (var node in imageNodes)
+                                {
+                                    var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
+                                    imageUrl = "https://www.conradantiquario.de/" + imageUrl;
+                                    CatalogImage image = new CatalogImage()
+                                    {
+                                        ImageUrl = imageUrl
+                                    };
+                                    if (images.Any(i => image.GetFilename() == i.GetFilename()))
+                                    {
+                                        continue;
+                                    }
+                                    bool inserted = false;
+                                    if (image.GetImageNumberFromFilename() > 0)
+                                    {
+                                        var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
+                                        if (imageBefore != null)
+                                        {
+                                            images.Insert(images.IndexOf(imageBefore) + 1, image);
+                                            inserted = true;
+                                        }
+                                    }
+                                    if (!inserted)
+                                    {
+                                        images.Add(image);
+                                    }
+                                    string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
+                                    image.ImageUrl = newImagePath;
+
+                                }
+                            }
+                        }
+                    }
+                }
+                if (images.Count == 0)
+                {
+                    var articleNodes = document.DocumentNode.SelectNodes("//*[@id='content']");
+                    if (articleNodes != null)
+                    {
+                        foreach (var articleNode in articleNodes)
+                        {
+                            var imageNodes = articleNode.SelectNodes(".//*[@data-lightbox]");
+                            if (imageNodes != null)
+                            {
+                                foreach (var node in imageNodes)
+                                {
+                                    var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
+                                    imageUrl = "https://www.conradantiquario.de/" + imageUrl;
+                                    CatalogImage image = new CatalogImage()
+                                    {
+                                        ImageUrl = imageUrl
+                                    };
+                                    if (images.Any(i => image.GetFilename() == i.GetFilename()))
+                                    {
+                                        continue;
+                                    }
+                                    bool inserted = false;
+                                    if (image.GetImageNumberFromFilename() > 0)
+                                    {
+                                        var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
+                                        if (imageBefore != null)
+                                        {
+                                            images.Insert(images.IndexOf(imageBefore) + 1, image);
+                                            inserted = true;
+                                        }
+                                    }
+                                    if (!inserted)
+                                    {
+                                        images.Add(image);
+                                    }
+                                    string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
+                                    image.ImageUrl = newImagePath;
+
+                                }
+                            }
+                            imageNodes = articleNode.SelectNodes(".//*[@data-full]");
+                            if (imageNodes != null)
+                            {
+                                foreach (var node in imageNodes)
+                                {
+                                    var imageUrl = node.GetAttributeValue("data-full", null).TrimStart('/', '.');
+                                    imageUrl = "https://www.conradantiquario.de/" + imageUrl;
+                                    CatalogImage image = new CatalogImage()
+                                    {
+                                        ImageUrl = imageUrl
+                                    };
+                                    if (images.Any(i => image.GetFilename() == i.GetFilename()))
+                                    {
+                                        continue;
+                                    }
+                                    bool inserted = false;
+                                    if (image.GetImageNumberFromFilename() > 0)
+                                    {
+                                        var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
+                                        if (imageBefore != null)
+                                        {
+                                            images.Insert(images.IndexOf(imageBefore) + 1, image);
+                                            inserted = true;
+                                        }
+                                    }
+                                    if (!inserted)
+                                    {
+                                        images.Add(image);
+                                    }
+                                    string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
+                                    image.ImageUrl = newImagePath;
+
+                                }
+                            }
+                        }
+                    }
                 }
             }
+            FolderUtilities.SaveCatalogImagesList(this.catalogListName, catalogIdentifier, images.Select(i => Path.GetFileName(i.ImageUrl)).ToList());
 
-            var bookNode = document.DocumentNode.SelectSingleNode("//*[@id='mybook']");
-            if (bookNode != null)
-            {
+            return images;
 
-            }
         }
     }
 }

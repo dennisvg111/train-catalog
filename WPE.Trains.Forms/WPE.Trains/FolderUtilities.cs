@@ -5,16 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
-using System.Net;
 
 namespace WPE.Trains
 {
     public static class FolderUtilities
     {
-        private static string appdataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WPE_Trains");
+        private static string appdataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WPE_Trains");
 
         private static List<string> catalogListFolders = new List<string>();
-        
+
         static FolderUtilities()
         {
             if (!Directory.Exists(appdataFolder))
@@ -42,23 +41,7 @@ namespace WPE.Trains
             };
         }
 
-        private static ImageFile GetImageFromUrl(string url)
-        {
-            WebClient client = new WebClient();
-            var data = client.DownloadData(url);
-            string contentType = client.ResponseHeaders["Content-Type"];
-            if (!contentType.StartsWith("image"))
-            {
-                throw new Exception("Couldn't get image content type from image at url " + url);
-            }
-            contentType = contentType.Replace("image/", "");
-            contentType = "." + contentType;
-            return new ImageFile()
-            {
-                Extension = contentType,
-                FileData = data
-            };
-        }
+
 
         public static IReadOnlyList<string> GetCatalogLists()
         {
@@ -94,6 +77,54 @@ namespace WPE.Trains
             return catalogs;
         }
 
+        public static IReadOnlyList<CatalogImage> GetCatalogImages(string catalogList, string catalogIdentifier)
+        {
+            if (!catalogListFolders.Contains(catalogList))
+            {
+                return new List<CatalogImage>();
+            }
+            string catalogListFolder = Path.Combine(appdataFolder, catalogList);
+            string catalogFolder = Path.Combine(catalogListFolder, catalogIdentifier);
+            string imagesFolder = Path.Combine(catalogFolder, "images");
+            if (!Directory.Exists(imagesFolder))
+            {
+                return new List<CatalogImage>();
+            }
+            var imageOrderFile = Path.Combine(catalogFolder, "image-order.json");
+
+            List<CatalogImage> images = new List<CatalogImage>();
+            var imagePaths = Directory.EnumerateFiles(imagesFolder, "*.*", SearchOption.TopDirectoryOnly);
+            foreach (var image in imagePaths)
+            {
+                images.Add(new CatalogImage()
+                {
+                    ImageUrl = image
+                });
+            }
+            if (File.Exists(imageOrderFile))
+            {
+                var json = File.ReadAllText(imageOrderFile);
+                List<string> orderedImagePaths = JsonConvert.DeserializeObject<List<string>>(json, GetDefaultJsonSettigns());
+                images.Sort((i1, i2) =>
+                {
+                    if (orderedImagePaths.Contains(Path.GetFileName(i1.ImageUrl)) && orderedImagePaths.Contains(Path.GetFileName(i2.ImageUrl)))
+                    {
+                        return orderedImagePaths.IndexOf(Path.GetFileName(i1.ImageUrl)).CompareTo(orderedImagePaths.IndexOf(Path.GetFileName(i2.ImageUrl)));
+                    }
+                    if (orderedImagePaths.Contains(Path.GetFileName(i1.ImageUrl)))
+                    {
+                        return -1;
+                    }
+                    if (orderedImagePaths.Contains(Path.GetFileName(i2.ImageUrl)))
+                    {
+                        return 1;
+                    }
+                    return 0;
+                });
+            }
+            return images;
+        }
+
         public static void SaveCatalogInfo(string catalogList, CatalogInfo info)
         {
             if (!catalogListFolders.Contains(catalogList))
@@ -110,13 +141,39 @@ namespace WPE.Trains
             ImageFile image = null;
             try
             {
-                image = GetImageFromUrl(info.ThumbnailUrl);
+                image = ImageFile.FromUrl(info.ThumbnailUrl);
             }
             catch (Exception) { }
             if (image != null && image.FileData != null && image.FileData.Length > 0)
             {
                 File.WriteAllBytes(Path.Combine(catalogFolder, "thumbnail" + image.Extension), image.FileData);
             }
+        }
+
+        public static string SaveCatalogImage(string catalogList, string catalogIdentifier, string imageUrl)
+        {
+            string fileName = ImageFile.GetFileNameFromUrl(imageUrl);
+            string catalogListFolder = Path.Combine(appdataFolder, catalogList);
+            string catalogFolder = Path.Combine(catalogListFolder, catalogIdentifier);
+            string imageFolder = Path.Combine(catalogFolder, "images");
+            if (!Directory.Exists(imageFolder))
+            {
+                Directory.CreateDirectory(imageFolder);
+            }
+            var image = ImageFile.FromUrl(imageUrl);
+            string imagePath = Path.Combine(imageFolder, fileName + image.Extension);
+            File.WriteAllBytes(imagePath, image.FileData);
+            return imagePath;
+        }
+
+        public static void SaveCatalogImagesList(string catalogList, string catalogIdentifier, List<string> images)
+        {
+            string catalogListFolder = Path.Combine(appdataFolder, catalogList);
+            string catalogFolder = Path.Combine(catalogListFolder, catalogIdentifier);
+            Directory.CreateDirectory(catalogFolder);
+            JsonSerializer serializer = new JsonSerializer();
+            var json = JsonConvert.SerializeObject(images, GetDefaultJsonSettigns());
+            File.WriteAllText(Path.Combine(catalogFolder, "image-order.json"), json);
         }
     }
 }

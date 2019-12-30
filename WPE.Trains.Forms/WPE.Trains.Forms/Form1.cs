@@ -44,6 +44,7 @@ namespace WPE.Trains.Forms
                 description.Anchor = AnchorStyles.Left;
                 catalogListContainer.Controls.Add(description);
             }
+            catalogListClient.GetCatalogImages("fleischmann-1959");
         }
     }
 }
