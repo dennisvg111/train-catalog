@@ -8,7 +8,6 @@ namespace WPE.Trains
 {
     public class CatalogImage
     {
-        private ImageFile image;
         public string ImageUrl { get; set; }
 
         public string GetFilename()
@@ -33,14 +32,9 @@ namespace WPE.Trains
             }
             return int.Parse(numberString);
         }
-        
-        public void SetImage(ImageFile image)
+        public ImageFile GetImageFile()
         {
-            this.image = image;
-        }
-        public ImageFile GetImage()
-        {
-            return this.image;
+            return ImageFile.FromUrl(this.ImageUrl);
         }
     }
 }

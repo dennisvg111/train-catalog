@@ -27,7 +27,7 @@ namespace WPE.Trains
             {
                 document = DownloadHtmlDocument($"content/{this.catalogListName}.html");
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 document = null;
             }
@@ -256,6 +256,31 @@ namespace WPE.Trains
                     }
                 }
             }
+
+            if (images.Count > 0)
+            {
+                Dictionary<ImageUtilities.AspectRatio, int> sizeCounts = new Dictionary<ImageUtilities.AspectRatio, int>();
+                foreach (var image in images)
+                {
+                    var actualImage = image.GetImageFile().ToDotNetImage();
+                    var aspectRatio = ImageUtilities.GetAspectRatio(actualImage);
+                    var existing = sizeCounts.Keys.FirstOrDefault(s => s.Horizontal == aspectRatio.Horizontal && s.Vertical == aspectRatio.Vertical);
+                    if (existing == null)
+                    {
+                        existing = aspectRatio;
+                        sizeCounts[existing] = 0;
+                    }
+                    sizeCounts[existing]++;
+                }
+                if (sizeCounts.Keys.Count == 2)
+                {
+                    var smallest = sizeCounts.Keys.OrderBy(s => (double)s.Horizontal / s.Vertical).First();
+                    var largest = sizeCounts.Keys.OrderBy(s => (double)s.Horizontal / s.Vertical).Last();
+                }
+
+            }
+
+
             FolderUtilities.SaveCatalogImagesList(this.catalogListName, catalogIdentifier, images.Select(i => Path.GetFileName(i.ImageUrl)).ToList());
 
             return images;

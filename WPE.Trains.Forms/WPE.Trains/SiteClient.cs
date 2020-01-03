@@ -77,17 +77,30 @@ namespace WPE.Trains
                     return st.ToArray();
                 }
             }
-            var response = client.GetAsync(url).Result;
-
-            if (response != null && response.StatusCode == HttpStatusCode.OK)
+            var oldSecurity = ServicePointManager.SecurityProtocol;
+            try
             {
-                using (var stream = response.Content.ReadAsStreamAsync().Result)
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                var response = client.GetAsync(url).Result;
+
+                if (response != null && response.StatusCode == HttpStatusCode.OK)
                 {
-                    var memStream = new MemoryStream();
-                    stream.CopyTo(memStream);
-                    memStream.Position = 0;
-                    return memStream.ToArray();
+                    using (var stream = response.Content.ReadAsStreamAsync().Result)
+                    {
+                        var memStream = new MemoryStream();
+                        stream.CopyTo(memStream);
+                        memStream.Position = 0;
+                        return memStream.ToArray();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = oldSecurity;
             }
             return null;
         }
@@ -108,8 +121,10 @@ namespace WPE.Trains
                 return null;
             }
 
+            var oldSecurity = ServicePointManager.SecurityProtocol;
             try
             {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                 var pageResult = client.GetAsync(url).Result;
                 pageResult.EnsureSuccessStatusCode();
                 html = pageResult.Content.ReadAsStringAsync().Result;
@@ -118,6 +133,10 @@ namespace WPE.Trains
             catch (Exception e)
             {
                 throw new WebException("Couldn't load html for url: " + url + Environment.NewLine + e.Message, e);
+            }
+            finally
+            {
+                ServicePointManager.SecurityProtocol = oldSecurity;
             }
         }
 

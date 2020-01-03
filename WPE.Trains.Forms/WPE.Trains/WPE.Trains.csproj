@@ -53,6 +53,7 @@
     <Compile Include="CatalogInfo.cs" />
     <Compile Include="FolderUtilities.cs" />
     <Compile Include="ImageFile.cs" />
+    <Compile Include="ImageUtilities.cs" />
     <Compile Include="SiteClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
