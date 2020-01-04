@@ -9,6 +9,7 @@ namespace WPE.Trains
     public class CatalogImage
     {
         public string ImageUrl { get; set; }
+        public bool Double { get; internal set; }
 
         public string GetFilename()
         {

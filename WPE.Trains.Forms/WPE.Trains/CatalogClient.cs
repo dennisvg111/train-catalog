@@ -104,31 +104,7 @@ namespace WPE.Trains
                         {
                             var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
                             imageUrl = "https://www.conradantiquario.de/" + imageUrl;
-                            CatalogImage image = new CatalogImage()
-                            {
-                                ImageUrl = imageUrl
-                            };
-                            if (images.Any(i => image.GetFilename() == i.GetFilename()))
-                            {
-                                continue;
-                            }
-                            bool inserted = false;
-                            if (image.GetImageNumberFromFilename() > 0)
-                            {
-                                var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
-                                if (imageBefore != null)
-                                {
-                                    images.Insert(images.IndexOf(imageBefore) + 1, image);
-                                    inserted = true;
-                                }
-                            }
-                            if (!inserted)
-                            {
-                                images.Add(image);
-                            }
-                            string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
-                            image.ImageUrl = newImagePath;
-
+                            AddCatalogImageToList(images, imageUrl, catalogIdentifier);
                         }
                     }
                 }
@@ -147,31 +123,7 @@ namespace WPE.Trains
                                 {
                                     var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
                                     imageUrl = "https://www.conradantiquario.de/" + imageUrl;
-                                    CatalogImage image = new CatalogImage()
-                                    {
-                                        ImageUrl = imageUrl
-                                    };
-                                    if (images.Any(i => image.GetFilename() == i.GetFilename()))
-                                    {
-                                        continue;
-                                    }
-                                    bool inserted = false;
-                                    if (image.GetImageNumberFromFilename() > 0)
-                                    {
-                                        var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
-                                        if (imageBefore != null)
-                                        {
-                                            images.Insert(images.IndexOf(imageBefore) + 1, image);
-                                            inserted = true;
-                                        }
-                                    }
-                                    if (!inserted)
-                                    {
-                                        images.Add(image);
-                                    }
-                                    string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
-                                    image.ImageUrl = newImagePath;
-
+                                    AddCatalogImageToList(images, imageUrl, catalogIdentifier);
                                 }
                             }
                         }
@@ -191,31 +143,7 @@ namespace WPE.Trains
                                 {
                                     var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
                                     imageUrl = "https://www.conradantiquario.de/" + imageUrl;
-                                    CatalogImage image = new CatalogImage()
-                                    {
-                                        ImageUrl = imageUrl
-                                    };
-                                    if (images.Any(i => image.GetFilename() == i.GetFilename()))
-                                    {
-                                        continue;
-                                    }
-                                    bool inserted = false;
-                                    if (image.GetImageNumberFromFilename() > 0)
-                                    {
-                                        var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
-                                        if (imageBefore != null)
-                                        {
-                                            images.Insert(images.IndexOf(imageBefore) + 1, image);
-                                            inserted = true;
-                                        }
-                                    }
-                                    if (!inserted)
-                                    {
-                                        images.Add(image);
-                                    }
-                                    string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
-                                    image.ImageUrl = newImagePath;
-
+                                    AddCatalogImageToList(images, imageUrl, catalogIdentifier);
                                 }
                             }
                             imageNodes = articleNode.SelectNodes(".//*[@data-full]");
@@ -225,31 +153,8 @@ namespace WPE.Trains
                                 {
                                     var imageUrl = node.GetAttributeValue("data-full", null).TrimStart('/', '.');
                                     imageUrl = "https://www.conradantiquario.de/" + imageUrl;
-                                    CatalogImage image = new CatalogImage()
-                                    {
-                                        ImageUrl = imageUrl
-                                    };
-                                    if (images.Any(i => image.GetFilename() == i.GetFilename()))
-                                    {
-                                        continue;
-                                    }
-                                    bool inserted = false;
-                                    if (image.GetImageNumberFromFilename() > 0)
-                                    {
-                                        var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
-                                        if (imageBefore != null)
-                                        {
-                                            images.Insert(images.IndexOf(imageBefore) + 1, image);
-                                            inserted = true;
-                                        }
-                                    }
-                                    if (!inserted)
-                                    {
-                                        images.Add(image);
-                                    }
-                                    string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
-                                    image.ImageUrl = newImagePath;
 
+                                    AddCatalogImageToList(images, imageUrl, catalogIdentifier);
                                 }
                             }
                         }
@@ -257,14 +162,18 @@ namespace WPE.Trains
                 }
             }
 
+            FolderUtilities.SaveCatalogImagesList(this.catalogListName, catalogIdentifier, images.Select(i => Path.GetFileName(i.ImageUrl)).ToList());
+
             if (images.Count > 0)
             {
-                Dictionary<ImageUtilities.AspectRatio, int> sizeCounts = new Dictionary<ImageUtilities.AspectRatio, int>();
+                Dictionary<AspectRatio, int> sizeCounts = new Dictionary<AspectRatio, int>();
+                Dictionary<CatalogImage, AspectRatio> imageSizes = new Dictionary<CatalogImage, AspectRatio>();
                 foreach (var image in images)
                 {
                     var actualImage = image.GetImageFile().ToDotNetImage();
-                    var aspectRatio = ImageUtilities.GetAspectRatio(actualImage);
-                    var existing = sizeCounts.Keys.FirstOrDefault(s => s.Horizontal == aspectRatio.Horizontal && s.Vertical == aspectRatio.Vertical);
+                    var aspectRatio = AspectRatio.FromImage(actualImage);
+                    imageSizes[image] = aspectRatio;
+                    var existing = sizeCounts.Keys.FirstOrDefault(s => s.OriginalRatio == aspectRatio.OriginalRatio);
                     if (existing == null)
                     {
                         existing = aspectRatio;
@@ -272,19 +181,50 @@ namespace WPE.Trains
                     }
                     sizeCounts[existing]++;
                 }
-                if (sizeCounts.Keys.Count == 2)
+                if (sizeCounts.Values.Distinct().Count() > 1 || sizeCounts.Keys.Count() == 1)
                 {
-                    var smallest = sizeCounts.Keys.OrderBy(s => (double)s.Horizontal / s.Vertical).First();
-                    var largest = sizeCounts.Keys.OrderBy(s => (double)s.Horizontal / s.Vertical).Last();
+                    var defaultRatio = sizeCounts.OrderByDescending(kv => kv.Value).First().Key;
+                    foreach (var image in images)
+                    {
+                        var aspectRatio = imageSizes[image];
+                        var ratio = aspectRatio.OriginalRatio / defaultRatio.OriginalRatio;
+                        if (ratio > 1.9 && ratio < 2.1)
+                        {
+                            image.Double = true;
+                        }
+                    }
                 }
-
             }
 
-
-            FolderUtilities.SaveCatalogImagesList(this.catalogListName, catalogIdentifier, images.Select(i => Path.GetFileName(i.ImageUrl)).ToList());
-
             return images;
+        }
 
+        private void AddCatalogImageToList(List<CatalogImage> images, string imageUrl, string catalogIdentifier)
+        {
+            CatalogImage image = new CatalogImage()
+            {
+                ImageUrl = imageUrl
+            };
+            if (images.Any(i => image.GetFilename() == i.GetFilename()))
+            {
+                return;
+            }
+            bool inserted = false;
+            if (image.GetImageNumberFromFilename() > 0)
+            {
+                var imageBefore = images.FirstOrDefault(i => i.GetImageNumberFromFilename() == image.GetImageNumberFromFilename() - 1);
+                if (imageBefore != null)
+                {
+                    images.Insert(images.IndexOf(imageBefore) + 1, image);
+                    inserted = true;
+                }
+            }
+            if (!inserted)
+            {
+                images.Add(image);
+            }
+            string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
+            image.ImageUrl = newImagePath;
         }
     }
 }

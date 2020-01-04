@@ -48,12 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AspectRatio.cs" />
     <Compile Include="CatalogClient.cs" />
     <Compile Include="CatalogImage.cs" />
     <Compile Include="CatalogInfo.cs" />
     <Compile Include="FolderUtilities.cs" />
     <Compile Include="ImageFile.cs" />
-    <Compile Include="ImageUtilities.cs" />
     <Compile Include="SiteClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
