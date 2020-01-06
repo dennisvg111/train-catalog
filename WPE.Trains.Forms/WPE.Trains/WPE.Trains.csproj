@@ -52,6 +52,7 @@
     <Compile Include="CatalogClient.cs" />
     <Compile Include="CatalogImage.cs" />
     <Compile Include="CatalogInfo.cs" />
+    <Compile Include="Cropper.cs" />
     <Compile Include="FolderUtilities.cs" />
     <Compile Include="ImageFile.cs" />
     <Compile Include="SiteClient.cs" />

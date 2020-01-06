@@ -66,7 +66,9 @@ namespace WPE.Trains
                             Year = years
                         };
                         catalogs.Add(catalog);
-                        FolderUtilities.SaveCatalogInfo(this.catalogListName, catalog);
+                        string newThumbnailUrl;
+                        FolderUtilities.SaveCatalogInfo(this.catalogListName, catalog, out newThumbnailUrl);
+                        catalog.ThumbnailUrl = newThumbnailUrl;
                     }
                 }
             }

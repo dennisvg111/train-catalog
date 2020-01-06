@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
+using System.Drawing;
 
 namespace WPE.Trains
 {
@@ -125,8 +126,9 @@ namespace WPE.Trains
             return images;
         }
 
-        public static void SaveCatalogInfo(string catalogList, CatalogInfo info)
+        public static void SaveCatalogInfo(string catalogList, CatalogInfo info, out string thumbnailUrl)
         {
+            thumbnailUrl = info.ThumbnailUrl;
             if (!catalogListFolders.Contains(catalogList))
             {
                 throw new ArgumentException($"Catalog {catalogList} does not exists");
@@ -146,7 +148,25 @@ namespace WPE.Trains
             catch (Exception) { }
             if (image != null && image.FileData != null && image.FileData.Length > 0)
             {
+                try
+                {
+                    Image netImage = image.ToDotNetImage();
+                    Bitmap bitmap = new Bitmap(netImage);
+                    try
+                    {
+                        bitmap = Cropper.Crop(bitmap);
+                    }
+                    catch (Exception) { }
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                        image.FileData = memoryStream.ToArray();
+                        image.Extension = ".png";
+                    }
+                }
+                catch (Exception) { }
                 File.WriteAllBytes(Path.Combine(catalogFolder, "thumbnail" + image.Extension), image.FileData);
+                thumbnailUrl = Path.Combine(catalogFolder, "thumbnail" + image.Extension);
             }
         }
 
