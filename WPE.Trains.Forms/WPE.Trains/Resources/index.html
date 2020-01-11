@@ -150,7 +150,7 @@
             top: 0px;
             left: 0px;
             height: 100vh;
-            right: 0px;
+            width: 100vw;
             z-index: 1;
             opacity: 0;
             transition: opacity 0.4s;
@@ -421,215 +421,81 @@
             .search-container h1 {
                 font-family: Raleway;
                 font-size: 30px;
+                float: left;
             }
+
+            .search-container input {
+                height: 25px;
+                font-size: 20px;
+                box-shadow: none;
+                float: right;
+                margin-top: 10px;
+                margin-right: 20px;
+                border-radius: 0;
+                border: none;
+                outline: none;
+                background-image: linear-gradient(#ffa500, #ffa500), linear-gradient(#D2D2D2, #D2D2D2);
+                background-size: 0 2px, 100% 1px;
+                background-repeat: no-repeat;
+                background-position: center bottom, center calc(100% - 1px);
+                background-color: rgba(0, 0, 0, 0);
+                transition: background 0s ease-out;
+            }
+
+                .search-container input:hover,
+                .search-container input:focus {
+                    background-size: 100% 2px, 100% 1px;
+                    transition-duration: 0.3s;
+                }
+
+        .book_list {
+            clear: both;
+        }
     </style>
 </head>
 <body>
     <div class="search-container">
         <h1>W.P.E. Trein catalogus verzameling</h1>
+        <input id="search" placeholder="filter" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     </div>
     <div class="book_list">
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
-        <div class="book_list-item" data-book="fleischmann-1959">
-            <div class="bk-img">
-                <div class="bk-wrapper">
-                    <div class="book-item">
-                        <div class="bk-book bk-bookdefault">
-                            <div class="bk-front">
-                                <div class="bk-cover"><img src="images/thumbnail.png" /></div>
-                            </div>
-                            <div class="bk-back"></div>
-                            <div class="bk-left"><img src="images/thumbnail.png" /></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-info">
-                <h2>catalog | trains, you may be sure, are real live trains in miniature | 1971</h2>
-                <p>Fleischmann</p>
-                <p>1971</p>
-            </div>
-        </div>
+        {BookItems}
     </div>
     <div class="book-modal" style="display: none;">
         <div class="close-button">&times;</div>
         <div class="book_wrapper">
-            <div data-book="fleischmann-1959" style="display: none;">
-                <div class="b-load">
-                    <div>
-                        <h1>Katalog H0 1959-1960</h1>
-                        <p>1959-1960</p>
-                        <p>Fleischmann</p>
-                    </div>
-                    <div>
-                        <img src="images/lb01.jpeg" />
-                    </div>
-                    <div>
-                        <img src="images/lb02.jpeg" />
-                    </div>
-                    <div>
-                        <img src="images/lb33.jpeg" />
-                    </div>
-                    <div>
-                        <img class="double" src="images/lb34.jpeg" />
-                    </div>
-                    <div>
-                        <img class="double" src="images/lb34.jpeg" />
-                    </div>
-                    <div>
-                        <img src="images/lb35.jpeg" />
-                    </div>
-                </div>
-            </div>
+            {Booklets}
         </div>
     </div>
 
 
     <script type="text/javascript">
-        var showBook;
-        var hideBook;
-
-
         $(function () {
+            $(window).keydown(function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.keyCode === 70) {
+                    e.preventDefault();
+                    hideBook();
+                    $('#search').focus();
+                }
+            });
+            $('#search').keyup(function () {
+                let search = $('#search').val().toLowerCase();
+                if (!search) {
+                    $('.book_list-item').show();
+                }
+                let splitSearch = search.split(" ");
+                $('.book_list-item').hide();
+                $('.bk-info').each(function () {
+                    let text = $(this).text().toLowerCase();
+                    for (let i = 0; i < splitSearch.length; i++) {
+                        if (text.indexOf(splitSearch[i]) < 0) {
+                            return;
+                        }
+                    }
+                    $(this).closest('.book_list-item').show();
+                })
+            })
+
             $('.book_list').on("click", '.book_list-item', function () {
                 let bookId = $(this).attr("data-book");
                 showBook(bookId);
@@ -658,7 +524,7 @@
                 return $('.book_wrapper .booklet').data("booklet");
             }
 
-            showBook = function (bookName) {
+            function showBook(bookName) {
                 let scrollY = window.scrollY;
                 hideBook();
                 document.body.style.position = 'fixed';
@@ -680,7 +546,7 @@
                 });
             }
 
-            hideBook = function () {
+            function hideBook() {
                 const scrollY = document.body.style.top;
                 document.body.style.position = '';
                 document.body.style.top = '';

@@ -225,8 +225,15 @@ namespace WPE.Trains
             {
                 images.Add(image);
             }
-            string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
-            image.ImageUrl = newImagePath;
+            try
+            {
+                string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
+                image.ImageUrl = newImagePath;
+            }
+            catch (Exception)
+            {
+                images.Remove(image);
+            }
         }
     }
 }

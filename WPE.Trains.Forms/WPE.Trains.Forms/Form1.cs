@@ -19,32 +19,32 @@ namespace WPE.Trains.Forms
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            CatalogClient catalogListClient = new CatalogClient("fleischmann_katalogservice");
-            var catalogs = catalogListClient.GetCatalogList();
+        }
 
-            int y = 0;
-            foreach (var catalog in catalogs)
-            {
-                Label year = new Label();
-                year.AutoSize = true;
-                year.Text = catalog.Year;
-                year.Font = new Font("Arial", 20, FontStyle.Regular);
-                year.Anchor = AnchorStyles.Left;
-                catalogListContainer.Controls.Add(year);
-                PictureBox thumbnail = new PictureBox();
-                thumbnail.SizeMode = PictureBoxSizeMode.Zoom;
-                thumbnail.ImageLocation = catalog.ThumbnailUrl;
-                thumbnail.Width = 150;
-                thumbnail.Height = 150;
-                catalogListContainer.Controls.Add(thumbnail);
-                Label description = new Label();
-                description.AutoSize = true;
-                description.Text = catalog.Description;
-                description.Font = new Font("Arial", 18, FontStyle.Regular);
-                description.Anchor = AnchorStyles.Left;
-                catalogListContainer.Controls.Add(description);
-            }
-            catalogListClient.GetCatalogImages("fleischmann-1959");
+        private void LoadGalleriesButton_Click(object sender, EventArgs e)
+        {
+            SiteBuilder siteBuilder = new SiteBuilder("fleischmann_katalogservice");
+            siteBuilder.BuildSite();
+            //CatalogClient catalogListClient = new CatalogClient("fleischmann_katalogservice");
+            //GalleryListProgress.Value = 0;
+            //var catalogs = catalogListClient.GetCatalogList();
+            //GalleryListProgress.Value = 100;
+
+            //int i = 0;
+            //Dictionary<string, List<CatalogImage>> catalogImages = new Dictionary<string, List<CatalogImage>>(); 
+            //foreach (var catalog in catalogs)
+            //{
+            //    GalleryName.Text = catalog.Description;
+            //    GalleryListProgressText.Text = $"loaded {i}/{catalogs.Count}";
+            //    GalleryProgress.Value = 0;
+            //    List<CatalogImage> images = catalogListClient.GetCatalogImages(catalog.Identifier);
+            //    catalogImages[catalog.Identifier] = images;
+
+            //    GalleryProgress.Value = 100;
+            //    i++;
+            //}
+            //GalleryName.Text = "";
+            //GalleryListProgressText.Text = $"Building site";
         }
     }
 }

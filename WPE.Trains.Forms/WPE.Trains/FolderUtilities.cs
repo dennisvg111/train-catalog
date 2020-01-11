@@ -9,9 +9,10 @@ using System.Drawing;
 
 namespace WPE.Trains
 {
-    public static class FolderUtilities
+    internal static class FolderUtilities
     {
         private static string appdataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WPE_Trains");
+        public static string BaseFolder { get { return appdataFolder; } }
 
         private static List<string> catalogListFolders = new List<string>();
 
@@ -44,12 +45,12 @@ namespace WPE.Trains
 
 
 
-        public static IReadOnlyList<string> GetCatalogLists()
+        internal static IReadOnlyList<string> GetCatalogLists()
         {
             return catalogListFolders;
         }
 
-        public static IReadOnlyList<CatalogInfo> GetCatalogListItems(string catalogList)
+        internal static IReadOnlyList<CatalogInfo> GetCatalogListItems(string catalogList)
         {
             if (!catalogListFolders.Contains(catalogList))
             {
@@ -78,7 +79,7 @@ namespace WPE.Trains
             return catalogs;
         }
 
-        public static IReadOnlyList<CatalogImage> GetCatalogImages(string catalogList, string catalogIdentifier)
+        internal static IReadOnlyList<CatalogImage> GetCatalogImages(string catalogList, string catalogIdentifier)
         {
             if (!catalogListFolders.Contains(catalogList))
             {
@@ -126,7 +127,7 @@ namespace WPE.Trains
             return images;
         }
 
-        public static void SaveCatalogInfo(string catalogList, CatalogInfo info, out string thumbnailUrl)
+        internal static void SaveCatalogInfo(string catalogList, CatalogInfo info, out string thumbnailUrl)
         {
             thumbnailUrl = info.ThumbnailUrl;
             if (!catalogListFolders.Contains(catalogList))
@@ -170,7 +171,7 @@ namespace WPE.Trains
             }
         }
 
-        public static string SaveCatalogImage(string catalogList, string catalogIdentifier, string imageUrl)
+        internal static string SaveCatalogImage(string catalogList, string catalogIdentifier, string imageUrl)
         {
             string fileName = ImageFile.GetFileNameFromUrl(imageUrl);
             string catalogListFolder = Path.Combine(appdataFolder, catalogList);
@@ -186,7 +187,7 @@ namespace WPE.Trains
             return imagePath;
         }
 
-        public static void SaveCatalogImagesList(string catalogList, string catalogIdentifier, List<string> images)
+        internal static void SaveCatalogImagesList(string catalogList, string catalogIdentifier, List<string> images)
         {
             string catalogListFolder = Path.Combine(appdataFolder, catalogList);
             string catalogFolder = Path.Combine(catalogListFolder, catalogIdentifier);
@@ -194,6 +195,43 @@ namespace WPE.Trains
             JsonSerializer serializer = new JsonSerializer();
             var json = JsonConvert.SerializeObject(images, GetDefaultJsonSettigns());
             File.WriteAllText(Path.Combine(catalogFolder, "image-order.json"), json);
+        }
+
+        internal static void WriteBookletResources()
+        {
+            string bookletFolder = Path.Combine(appdataFolder, "booklet");
+            Directory.CreateDirectory(bookletFolder);
+            File.WriteAllText(Path.Combine(bookletFolder, "jquery.booklet.latest.css"), Properties.Resources.jquery_booklet_latestCss);
+            File.WriteAllText(Path.Combine(bookletFolder, "jquery.booklet.latest.js"), Properties.Resources.jquery_booklet_latestJs);
+            File.WriteAllText(Path.Combine(bookletFolder, "jquery.booklet.latest.min.js"), Properties.Resources.jquery_booklet_latest_min);
+            File.WriteAllText(Path.Combine(bookletFolder, "jquery.easing.1.3.js"), Properties.Resources.jquery_easing_1_3);
+            File.WriteAllText(Path.Combine(bookletFolder, "jquery-2.1.0.min.js"), Properties.Resources.jquery_2_1_0_min);
+            File.WriteAllText(Path.Combine(bookletFolder, "jquery-ui-1.10.4.min.js"), Properties.Resources.jquery_ui_1_10_4_min);
+            string bookletImagesFolder = Path.Combine(bookletFolder, "images");
+            Directory.CreateDirectory(bookletImagesFolder);
+            Properties.Resources.arrow_next.Save(Path.Combine(bookletImagesFolder, "arrow-next.png"), System.Drawing.Imaging.ImageFormat.Png);
+            Properties.Resources.arrow_prev.Save(Path.Combine(bookletImagesFolder, "arrow-prev.png"), System.Drawing.Imaging.ImageFormat.Png);
+            Properties.Resources.shadow.Save(Path.Combine(bookletImagesFolder, "shadow.png"), System.Drawing.Imaging.ImageFormat.Png);
+            Properties.Resources.shadow_top_back.Save(Path.Combine(bookletImagesFolder, "shadow-top-back.png"), System.Drawing.Imaging.ImageFormat.Png);
+            Properties.Resources.shadow_top_forward.Save(Path.Combine(bookletImagesFolder, "shadow-top-forward.png"), System.Drawing.Imaging.ImageFormat.Png);
+            File.WriteAllBytes(Path.Combine(bookletImagesFolder, "closedhand.cur"), Properties.Resources.closedhand);
+            File.WriteAllBytes(Path.Combine(bookletImagesFolder, "openhand.cur"), Properties.Resources.openhand);
+            string fontsFolder = Path.Combine(appdataFolder, "fonts");
+            Directory.CreateDirectory(fontsFolder);
+            File.WriteAllBytes(Path.Combine(fontsFolder, "Courgette-Regular.ttf"), Properties.Resources.Courgette_Regular);
+            File.WriteAllBytes(Path.Combine(fontsFolder, "Raleway-Regular.ttf"), Properties.Resources.Raleway_Regular);
+            string imagesFolder = Path.Combine(appdataFolder, "images");
+            Directory.CreateDirectory(imagesFolder);
+            Properties.Resources.left_bg.Save(Path.Combine(imagesFolder, "left_bg.jpg"), System.Drawing.Imaging.ImageFormat.Jpeg);
+            Properties.Resources.right_bg.Save(Path.Combine(imagesFolder, "right_bg.jpg"), System.Drawing.Imaging.ImageFormat.Jpeg);
+
+        }
+
+        internal static string WriteSiteHtml(string html)
+        {
+            string sitePath = Path.Combine(appdataFolder, "site.html");
+            File.WriteAllText(sitePath, html);
+            return sitePath;
         }
     }
 }
