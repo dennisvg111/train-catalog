@@ -101,8 +101,17 @@ namespace WPE.Trains.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;div&gt;&lt;div class=&quot;centered-text&quot;&gt;&lt;/div&gt;&lt;/div&gt;.
+        /// </summary>
+        internal static string BookletEmptyPage {
+            get {
+                return ResourceManager.GetString("BookletEmptyPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;div&gt;
-        ///	&lt;img src=&quot;{ImageUrl}&quot; /&gt;
+        ///	&lt;img class=&quot;{DoubleIndicator}&quot; src=&quot;{ImageUrl}&quot; /&gt;
         ///&lt;/div&gt;.
         /// </summary>
         internal static string BookletImage {

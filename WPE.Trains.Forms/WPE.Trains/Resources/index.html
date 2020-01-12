@@ -88,6 +88,7 @@
             .booklet .b-wrap .b-counter {
                 box-shadow: 0px -1px 1px #fff;
                 height: 20px;
+                width: auto;
                 text-align: center;
                 background: transparent;
                 position: absolute;
@@ -96,6 +97,11 @@
                 transform: translate(-50%, 0);
                 font-size: 14px;
                 font-family: Courgette;
+            }
+
+            .booklet .b-page:nth-last-child(2) .b-wrap .b-counter::after {
+                content: " (laatste pagina)";
+                display: inline;
             }
 
             .booklet p,
@@ -112,6 +118,7 @@
                 font-size: 24px;
                 text-transform: uppercase;
                 font-weight: normal;
+                text-align: center;
                 background-image: linear-gradient(#ffa500, #ffa500), linear-gradient(#D2D2D2, #D2D2D2);
                 background-size: 0 2px, 100% 1px;
                 background-repeat: no-repeat;
@@ -139,6 +146,20 @@
                 .booklet .b-wrap > div img.double {
                     width: 200%;
                 }
+
+            .booklet .empty-page {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-family: Courgette;
+                font-size: 25px;
+            }
+
+            .booklet .empty-page::after {
+                content: "Zie volgende pagina";
+                display: inline;
+            }
 
             .booklet .b-wrap.b-wrap-right > div img.double {
                 transform: translate(-50%, 0);

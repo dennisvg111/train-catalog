@@ -174,6 +174,10 @@ namespace WPE.Trains
                 {
                     var actualImage = image.GetImageFile().ToDotNetImage();
                     var aspectRatio = AspectRatio.FromImage(actualImage);
+                    if (aspectRatio.OriginalRatio >= 1.25)
+                    {
+                        image.Double = true;
+                    }
                     imageSizes[image] = aspectRatio;
                     var existing = sizeCounts.Keys.FirstOrDefault(s => s.OriginalRatio == aspectRatio.OriginalRatio);
                     if (existing == null)

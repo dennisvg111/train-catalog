@@ -45,15 +45,9 @@ namespace WPE.Trains
                     {
                         thumbnailUrl = newThumbnailUrl;
                     }
-                    bookItemHtml = bookItemHtml.Replace("{Pages}", catalogImages[catalog.Identifier].Count.ToString());
-                }
-                else
-                {
-                    bookItemHtml = bookItemHtml.Replace("{Pages}", "-");
                 }
                 thumbnailUrl = thumbnailUrl.Replace(FolderUtilities.BaseFolder, "").TrimStart('\\', '/');
                 bookItemHtml = bookItemHtml.Replace("{Thumbnail}", thumbnailUrl);
-                bookItemsHtml += bookItemHtml + Environment.NewLine;
 
                 string bookletHtml = Properties.Resources.BookletImages;
                 bookletHtml = bookletHtml.Replace("{Identifier}", catalog.Identifier);
@@ -63,6 +57,7 @@ namespace WPE.Trains
                 string imagesHtml = "";
                 if (catalogImages.ContainsKey(catalog.Identifier) && catalogImages[catalog.Identifier].Count > 0)
                 {
+                    int page = 1;
                     foreach (var image in catalogImages[catalog.Identifier])
                     {
                         string imageUrl = image.ImageUrl.Replace(FolderUtilities.BaseFolder, "").TrimStart('\\', '/');
@@ -71,13 +66,31 @@ namespace WPE.Trains
                         imageHtml = imageHtml.Replace("{ImageUrl}", imageUrl);
                         if (image.Double)
                         {
+                            if (page % 2 == 1)
+                            {
+                                imagesHtml += Properties.Resources.BookletEmptyPage;
+                                page++;
+                            }
                             imageHtml += imageHtml;
+                            page++;
                         }
                         imagesHtml += imageHtml;
+                        page++;
                     }
+                    if (page % 2 == 1)
+                    {
+                        page++;
+                    }
+                    bookItemHtml = bookItemHtml.Replace("{Pages}", page.ToString());
                 }
+                else
+                {
+                    bookItemHtml = bookItemHtml.Replace("{Pages}", "-");
+                }
+                bookItemsHtml += bookItemHtml + Environment.NewLine;
+
                 bookletHtml = bookletHtml.Replace("{Images}", imagesHtml);
-                bookletsHtml += bookletHtml;
+                bookletsHtml += bookletHtml + Environment.NewLine;
             }
             mainHtml = mainHtml.Replace("{BookItems}", bookItemsHtml);
             mainHtml = mainHtml.Replace("{Booklets}", bookletsHtml);

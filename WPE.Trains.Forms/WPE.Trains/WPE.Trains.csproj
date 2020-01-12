@@ -132,5 +132,8 @@
   <ItemGroup>
     <None Include="Resources\BookletImage.html" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BookletEmptyPage.html" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
