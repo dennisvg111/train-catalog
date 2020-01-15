@@ -156,10 +156,10 @@
                 font-size: 25px;
             }
 
-            .booklet .empty-page::after {
-                content: "Zie volgende pagina";
-                display: inline;
-            }
+                .booklet .empty-page::after {
+                    content: "Zie volgende pagina";
+                    display: inline;
+                }
 
             .booklet .b-wrap.b-wrap-right > div img.double {
                 transform: translate(-50%, 0);
@@ -211,8 +211,8 @@
             background-color: #219e9a;
         }
 
-        .book_list-item:hover .bk-bookdefault {
-            transform: rotate3d(0, 1, 0, 25deg);
+        .book_list-item:hover .bk-book {
+            transform: rotate3d(0, 1, 0, -25deg);
         }
 
         .book_list-item:hover .bk-back {
@@ -309,9 +309,8 @@
                 width: 100%;
                 height: 215px;
                 transform-style: preserve-3d;
-                transition: -webkit-transform .5s;
+                transform: rotate3d(0, 1, 0, 10deg);
                 transition: transform .5s;
-                transition: transform .5s, -webkit-transform .5s;
             }
 
                 .bk-img .bk-book > div,
@@ -378,7 +377,8 @@
                     box-shadow: 1px 0 3px rgba(255, 255, 255, 0.1);
                 }
 
-            .bk-img .bk-left {
+            .bk-img .bk-left,
+            .bk-img .bk-right {
                 height: 215px;
                 transform: rotate3d(0, 1, 0, -90deg);
                 overflow: hidden;
@@ -386,7 +386,7 @@
 
                 .bk-img .bk-left img {
                     object-fit: cover;
-                    transform: scaleX(-100) translate(49%, 0);
+                    transform: scaleX(-1000) translate(49%, 0);
                     width: 150px;
                     height: 215px;
                     position: absolute;
@@ -400,6 +400,14 @@
                     transform-origin: 0 0;
                     transform: rotate(90deg) translateY(-40px);
                 }
+
+            .bk-img .bk-right {
+                left: auto;
+                right: -20px;
+                background: white;
+                background-image: linear-gradient(90deg, #d1d1d1 20%, transparent 20%, transparent 50%, #d1d1d1 50%, #d1d1d1 70%, transparent 70%, transparent 100%);
+                background-size: 10px 10px;
+            }
 
             .bk-img .bk-cover {
                 background-repeat: no-repeat;
