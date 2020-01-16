@@ -10,6 +10,11 @@ namespace WPE.Trains
 {
     public class CatalogClient : SiteClient
     {
+        public delegate void CatalogListLoadHandler(string message, float progress);
+
+        public event CatalogListLoadHandler CatalogListLoading;
+
+
         private string catalogListName;
         public string CatalogList { get { return catalogListName; } }
         public CatalogClient(string catalogListName, string userAgent = null) : base(userAgent)
@@ -20,7 +25,9 @@ namespace WPE.Trains
 
         public List<CatalogInfo> GetCatalogList()
         {
+            CatalogListLoading?.Invoke("Loading local catalogs info", 0);
             List<CatalogInfo> catalogs = FolderUtilities.GetCatalogListItems(this.catalogListName).ToList();
+            CatalogListLoading?.Invoke("Done loading local catalogs info", 0);
 
             HtmlDocument document = null;
             try
@@ -38,14 +45,17 @@ namespace WPE.Trains
                 var catalogNodes = document.DocumentNode.SelectNodes("//*[@id='content']//*[contains(@class, 'table-fill')]//tbody//tr");
                 if (catalogNodes != null)
                 {
+                    int index = 0;
                     foreach (var node in catalogNodes)
                     {
+                        CatalogListLoading?.Invoke($"Loading catalog {index + 1}/{catalogNodes.Count} ", Math.Min(index / (float)catalogNodes.Count, 99));
                         var url = node.SelectSingleNode("(.//td)[2]//a").GetAttributeValue("href", null);
                         url = url.Replace(".html", "");
                         string catalogName = url.Replace("katalog/", "");
                         var cachedCatalog = catalogs.FirstOrDefault(c => c.Identifier.ToLowerInvariant() == catalogName.ToLowerInvariant());
                         if (cachedCatalog != null && !string.IsNullOrEmpty(cachedCatalog.ThumbnailUrl))
                         {
+                            index++;
                             continue;
                         }
                         var manufacturer = node.SelectSingleNode("(.//td)[1]").InnerText;
@@ -69,6 +79,7 @@ namespace WPE.Trains
                         string newThumbnailUrl;
                         FolderUtilities.SaveCatalogInfo(this.catalogListName, catalog, out newThumbnailUrl);
                         catalog.ThumbnailUrl = newThumbnailUrl;
+                        index++;
                     }
                 }
             }
