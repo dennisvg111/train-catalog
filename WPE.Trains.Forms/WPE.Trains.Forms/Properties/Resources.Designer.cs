@@ -19,7 +19,7 @@ namespace WPE.Trains.Forms.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,34 @@ namespace WPE.Trains.Forms.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///
+        ///&lt;head&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///&lt;div class=&quot;train&quot;&gt;
+        ///  &lt;div class=&quot;windows&quot;&gt;&lt;/div&gt;
+        ///  &lt;div class=&quot;lights&quot;&gt;&lt;/div&gt;
+        ///&lt;/div&gt;
+        ///&lt;div class=&quot;rails&quot;&gt;
+        ///  &lt;div class=&quot;ties&quot;&gt;&lt;/div&gt;
+        ///  &lt;div class=&quot;ties&quot;&gt;&lt;/div&gt;
+        ///  &lt;div class=&quot;ties&quot;&gt;&lt;/div&gt;
+        ///&lt;/div&gt;
+        ///&lt;/body&gt;
+        ///&lt;/html&gt;
+        ///
+        ///
+        ///.
+        /// </summary>
+        internal static string TrainLoadingIndicator {
+            get {
+                return ResourceManager.GetString("TrainLoadingIndicator", resourceCulture);
             }
         }
     }
