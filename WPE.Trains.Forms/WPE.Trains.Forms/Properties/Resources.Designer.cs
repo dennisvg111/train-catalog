@@ -61,30 +61,32 @@ namespace WPE.Trains.Forms.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html&gt;
-        ///
-        ///&lt;head&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///&lt;div class=&quot;train&quot;&gt;
-        ///  &lt;div class=&quot;windows&quot;&gt;&lt;/div&gt;
-        ///  &lt;div class=&quot;lights&quot;&gt;&lt;/div&gt;
-        ///&lt;/div&gt;
-        ///&lt;div class=&quot;rails&quot;&gt;
-        ///  &lt;div class=&quot;ties&quot;&gt;&lt;/div&gt;
-        ///  &lt;div class=&quot;ties&quot;&gt;&lt;/div&gt;
-        ///  &lt;div class=&quot;ties&quot;&gt;&lt;/div&gt;
-        ///&lt;/div&gt;
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;
-        ///
-        ///
-        ///.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string TrainLoadingIndicator {
+        internal static System.Drawing.Bitmap landscape_background {
             get {
-                return ResourceManager.GetString("TrainLoadingIndicator", resourceCulture);
+                object obj = ResourceManager.GetObject("landscape_background", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap landscape_foreground {
+            get {
+                object obj = ResourceManager.GetObject("landscape_foreground", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap landscape_train {
+            get {
+                object obj = ResourceManager.GetObject("landscape_train", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

@@ -48,13 +48,13 @@ namespace WPE.Trains
                     int index = 0;
                     foreach (var node in catalogNodes)
                     {
-                        CatalogListLoading?.Invoke($"Loading catalog {index + 1}/{catalogNodes.Count} ", Math.Min(index / (float)catalogNodes.Count, 99));
                         var url = node.SelectSingleNode("(.//td)[2]//a").GetAttributeValue("href", null);
                         url = url.Replace(".html", "");
                         string catalogName = url.Replace("katalog/", "");
                         var cachedCatalog = catalogs.FirstOrDefault(c => c.Identifier.ToLowerInvariant() == catalogName.ToLowerInvariant());
                         if (cachedCatalog != null && !string.IsNullOrEmpty(cachedCatalog.ThumbnailUrl))
                         {
+                            CatalogListLoading?.Invoke($"Loaded catalog {index + 1}/{catalogNodes.Count} ", Math.Min(index / (float)catalogNodes.Count, 99));
                             index++;
                             continue;
                         }
@@ -79,6 +79,7 @@ namespace WPE.Trains
                         string newThumbnailUrl;
                         FolderUtilities.SaveCatalogInfo(this.catalogListName, catalog, out newThumbnailUrl);
                         catalog.ThumbnailUrl = newThumbnailUrl;
+                        CatalogListLoading?.Invoke($"Loaded catalog {index + 1}/{catalogNodes.Count} ", Math.Min(index / (float)catalogNodes.Count, 99));
                         index++;
                     }
                 }

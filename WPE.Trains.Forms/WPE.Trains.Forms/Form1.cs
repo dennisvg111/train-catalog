@@ -1,37 +1,30 @@
-﻿using CefSharp;
-using CefSharp.WinForms;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WPE.Trains.Forms
 {
-    //based on https://codepen.io/codyogden/pen/OpyPoN
-    //based on https://stackoverflow.com/a/41531530/5022761
-    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-    [ComVisible(true)]
     public partial class Form1 : Form
     {
-        private readonly ChromiumWebBrowser browser;
         public Form1()
         {
             InitializeComponent();
-            browser = new ChromiumWebBrowser(new CefSharp.Web.HtmlString(Properties.Resources.TrainLoadingIndicator));
-            browser.ConsoleMessage += OnBrowserConsoleMessage;
-            panel1.Controls.Add(browser);
-        }
-
-        private void OnBrowserConsoleMessage(object sender, ConsoleMessageEventArgs args)
-        {
-            Console.WriteLine(args.Message);
+            pictureBoxTrain.Parent = pictureBox1;
+            pictureBoxTrain.BackColor = Color.Transparent;
+            pictureBoxTrain.Top = 0;
+            pictureBoxTrain.Left = 0;
+            pictureBoxForeground.Parent = pictureBox1;
+            pictureBoxForeground.BackColor = Color.Transparent;
+            pictureBoxForeground.Top = 0;
+            pictureBoxForeground.Left = 0;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -40,10 +33,34 @@ namespace WPE.Trains.Forms
 
         private void LoadGalleriesButton_Click(object sender, EventArgs e)
         {
-            browser.ExecuteScriptAsync("alert('All Resources Have Loaded');");
-            return;
             SiteBuilder siteBuilder = new SiteBuilder("fleischmann_katalogservice");
-            siteBuilder.BuildSite();
+            siteBuilder.CatalogListLoading += SiteBuilder_CatalogListLoading;
+            siteBuilder.FinishedBuilding += SiteBuilder_FinishedBuilding;
+            new Thread(() =>
+            {
+                siteBuilder.BuildSite();
+            }).Start();
+        }
+
+        private void SiteBuilder_FinishedBuilding(string htmlLocation)
+        {
+                this.Invoke((MethodInvoker)delegate ()
+                {
+                    pictureBoxTrain.Left = Convert.ToInt32(pictureBox1.Width - pictureBoxTrain.Width);
+                    textBoxLog.AppendText("Finished generating HTML");
+                    this.Invalidate();
+                    Process.Start(htmlLocation);
+                });
+        }
+
+        private void SiteBuilder_CatalogListLoading(string message, float progress)
+        {
+                this.Invoke((MethodInvoker)delegate ()
+                {
+                    pictureBoxTrain.Left = Convert.ToInt32((pictureBox1.Width - pictureBoxTrain.Width) * progress);
+                    textBoxLog.AppendText(message + Environment.NewLine);
+                    this.Invalidate();
+                });
         }
     }
 }

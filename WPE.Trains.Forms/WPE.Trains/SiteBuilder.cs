@@ -8,25 +8,42 @@ namespace WPE.Trains
 {
     public class SiteBuilder
     {
+        public delegate void FinishedBuildingHandler(string htmlLocation);
+
+        public event CatalogClient.CatalogListLoadHandler CatalogListLoading;
+        public event FinishedBuildingHandler FinishedBuilding;
+
         private CatalogClient client;
         public string CatalogList { get { return client.CatalogList; } }
 
         public SiteBuilder(string catalogListName)
         {
             client = new CatalogClient(catalogListName);
+            client.CatalogListLoading += Client_CatalogListLoading;
+        }
+
+        private void Client_CatalogListLoading(string message, float progress)
+        {
+            CatalogListLoading?.Invoke(message, progress);
         }
 
         public void BuildSite()
         {
             FolderUtilities.WriteBookletResources();
             var catalogs = client.GetCatalogList();
+            CatalogListLoading?.Invoke("Downloading catalog images", 0);
+            int index = 0;
             Dictionary<string, List<CatalogImage>> catalogImages = new Dictionary<string, List<CatalogImage>>();
             foreach (var catalog in catalogs)
             {
                 List<CatalogImage> images = client.GetCatalogImages(catalog.Identifier);
                 catalogImages[catalog.Identifier] = images;
+
+                CatalogListLoading?.Invoke("Downloaded images for catalog " + catalog.Identifier, (index + 1) / (float)catalogs.Count);
+                index++;
             }
 
+            CatalogListLoading?.Invoke("Generating HTML ", 0);
             string mainHtml = Properties.Resources.SiteLayout;
             string bookItemsHtml = "";
             string bookletsHtml = "";
@@ -81,7 +98,7 @@ namespace WPE.Trains
                     {
                         page++;
                     }
-                    bookItemHtml = bookItemHtml.Replace("{Pages}", page.ToString());
+                    bookItemHtml = bookItemHtml.Replace("{Pages}", catalogImages[catalog.Identifier].Count.ToString());
                 }
                 else
                 {
@@ -94,7 +111,10 @@ namespace WPE.Trains
             }
             mainHtml = mainHtml.Replace("{BookItems}", bookItemsHtml);
             mainHtml = mainHtml.Replace("{Booklets}", bookletsHtml);
-            FolderUtilities.WriteSiteHtml(mainHtml);
+            string path = FolderUtilities.WriteSiteHtml(mainHtml);
+            FinishedBuilding?.Invoke(path);
         }
+
+
     }
 }
