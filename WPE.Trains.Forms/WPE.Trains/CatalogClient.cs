@@ -11,28 +11,27 @@ namespace WPE.Trains
     public class CatalogClient : SiteClient
     {
         public delegate void CatalogListLoadHandler(string message, float progress);
+        public delegate void CatalogLoadHandler(string message, float progress);
 
         public event CatalogListLoadHandler CatalogListLoading;
+        public event CatalogLoadHandler CatalogLoading;
 
-
-        private string catalogListName;
-        public string CatalogList { get { return catalogListName; } }
-        public CatalogClient(string catalogListName, string userAgent = null) : base(userAgent)
+        
+        public CatalogClient(string userAgent = null) : base(userAgent)
         {
-            this.catalogListName = catalogListName;
             GetDefaultClient("https://www.conradantiquario.de/");
         }
 
-        public List<CatalogInfo> GetCatalogList()
+        public List<CatalogInfo> GetCatalogList(string catalogListName)
         {
             CatalogListLoading?.Invoke("Loading local catalogs info", 0);
-            List<CatalogInfo> catalogs = FolderUtilities.GetCatalogListItems(this.catalogListName).ToList();
+            List<CatalogInfo> catalogs = FolderUtilities.GetCatalogListItems(catalogListName).ToList();
             CatalogListLoading?.Invoke("Done loading local catalogs info", 0);
 
             HtmlDocument document = null;
             try
             {
-                document = DownloadHtmlDocument($"content/{this.catalogListName}.html");
+                document = DownloadHtmlDocument($"content/{catalogListName}.html");
             }
             catch (Exception e)
             {
@@ -77,7 +76,7 @@ namespace WPE.Trains
                         };
                         catalogs.Add(catalog);
                         string newThumbnailUrl;
-                        FolderUtilities.SaveCatalogInfo(this.catalogListName, catalog, out newThumbnailUrl);
+                        FolderUtilities.SaveCatalogInfo(catalogListName, catalog, out newThumbnailUrl);
                         catalog.ThumbnailUrl = newThumbnailUrl;
                         CatalogListLoading?.Invoke($"Loaded catalog {index + 1}/{catalogNodes.Count} ", Math.Min(index / (float)catalogNodes.Count, 99));
                         index++;
@@ -86,15 +85,17 @@ namespace WPE.Trains
             }
             foreach (var catalog in catalogs)
             {
-                catalog.CatalogList = this.catalogListName;
+                catalog.CatalogList = catalogListName;
             }
             catalogs.Sort();
             return catalogs;
         }
 
-        public List<CatalogImage> GetCatalogImages(string catalogIdentifier)
+        public List<CatalogImage> GetCatalogImages(string catalogListName, string catalogIdentifier)
         {
-            List<CatalogImage> images = FolderUtilities.GetCatalogImages(this.catalogListName, catalogIdentifier).ToList();
+            CatalogLoading?.Invoke($"Loading local catalog images", 0);
+            List<CatalogImage> images = FolderUtilities.GetCatalogImages(catalogListName, catalogIdentifier).ToList();
+            CatalogLoading?.Invoke($"Done loading {images.Count} local catalog images", 0);
             HtmlDocument document = null;
             try
             {
@@ -106,6 +107,7 @@ namespace WPE.Trains
             }
             if (document != null)
             {
+                int index = 0;
                 var documentNode = document.DocumentNode;
 
                 var highResNodes = documentNode.SelectNodes(".//*[contains(@class, 'high-res')]");
@@ -118,7 +120,9 @@ namespace WPE.Trains
                         {
                             var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
                             imageUrl = "https://www.conradantiquario.de/" + imageUrl;
-                            AddCatalogImageToList(images, imageUrl, catalogIdentifier);
+                            AddCatalogImageToList(catalogListName, images, imageUrl, catalogIdentifier);
+                            CatalogLoading?.Invoke($"Loaded image {index + 1}/{imageNodes.Count} ", Math.Min(index / (float)imageNodes.Count, 99));
+                            index++;
                         }
                     }
                 }
@@ -137,7 +141,9 @@ namespace WPE.Trains
                                 {
                                     var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
                                     imageUrl = "https://www.conradantiquario.de/" + imageUrl;
-                                    AddCatalogImageToList(images, imageUrl, catalogIdentifier);
+                                    AddCatalogImageToList(catalogListName, images, imageUrl, catalogIdentifier);
+                                    CatalogLoading?.Invoke($"Loaded image {index + 1}/{imageNodes.Count} ", Math.Min(index / (float)imageNodes.Count, 99));
+                                    index++;
                                 }
                             }
                         }
@@ -157,7 +163,9 @@ namespace WPE.Trains
                                 {
                                     var imageUrl = node.GetAttributeValue("href", null).TrimStart('/', '.');
                                     imageUrl = "https://www.conradantiquario.de/" + imageUrl;
-                                    AddCatalogImageToList(images, imageUrl, catalogIdentifier);
+                                    AddCatalogImageToList(catalogListName, images, imageUrl, catalogIdentifier);
+                                    CatalogLoading?.Invoke($"Loaded image {index + 1}/{imageNodes.Count} ", Math.Min(index / (float)imageNodes.Count, 99));
+                                    index++;
                                 }
                             }
                             imageNodes = articleNode.SelectNodes(".//*[@data-full]");
@@ -168,7 +176,9 @@ namespace WPE.Trains
                                     var imageUrl = node.GetAttributeValue("data-full", null).TrimStart('/', '.');
                                     imageUrl = "https://www.conradantiquario.de/" + imageUrl;
 
-                                    AddCatalogImageToList(images, imageUrl, catalogIdentifier);
+                                    AddCatalogImageToList(catalogListName, images, imageUrl, catalogIdentifier);
+                                    CatalogLoading?.Invoke($"Loaded image {index + 1}/{imageNodes.Count} ", Math.Min(index / (float)imageNodes.Count, 99));
+                                    index++;
                                 }
                             }
                         }
@@ -176,8 +186,10 @@ namespace WPE.Trains
                 }
             }
 
-            FolderUtilities.SaveCatalogImagesList(this.catalogListName, catalogIdentifier, images.Select(i => Path.GetFileName(i.ImageUrl)).ToList());
+            CatalogLoading?.Invoke($"Saving images", 100);
+            FolderUtilities.SaveCatalogImagesList(catalogListName, catalogIdentifier, images.Select(i => Path.GetFileName(i.ImageUrl)).ToList());
 
+            CatalogLoading?.Invoke($"Detecting image aspect ratio", 100);
             if (images.Count > 0)
             {
                 Dictionary<AspectRatio, int> sizeCounts = new Dictionary<AspectRatio, int>();
@@ -217,7 +229,7 @@ namespace WPE.Trains
             return images;
         }
 
-        private void AddCatalogImageToList(List<CatalogImage> images, string imageUrl, string catalogIdentifier)
+        private void AddCatalogImageToList(string catalogListName, List<CatalogImage> images, string imageUrl, string catalogIdentifier)
         {
             CatalogImage image = new CatalogImage()
             {
@@ -243,7 +255,7 @@ namespace WPE.Trains
             }
             try
             {
-                string newImagePath = FolderUtilities.SaveCatalogImage(this.catalogListName, catalogIdentifier, imageUrl);
+                string newImagePath = FolderUtilities.SaveCatalogImage(catalogListName, catalogIdentifier, imageUrl);
                 image.ImageUrl = newImagePath;
             }
             catch (Exception)

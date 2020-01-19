@@ -12,9 +12,9 @@ namespace WPE.Trains
     internal static class FolderUtilities
     {
         private static string appdataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WPE_Trains");
-        public static string BaseFolder { get { return appdataFolder; } }
-
-        private static List<string> catalogListFolders = new List<string>();
+        private static string sitePath = Path.Combine(appdataFolder, "site.html");
+        internal static string BaseFolder { get { return appdataFolder; } }
+        internal static string SitePath { get { return sitePath; } }
 
         static FolderUtilities()
         {
@@ -22,12 +22,11 @@ namespace WPE.Trains
             {
                 Directory.CreateDirectory(appdataFolder);
             }
-            catalogListFolders = Directory.GetDirectories(appdataFolder).Select(p => Path.GetFileName(p)).ToList();
-            if (catalogListFolders.Count < 1)
+            if (GetCatalogLists().Count < 1)
             {
-                catalogListFolders.Add("fleischmann_katalogservice");
-                catalogListFolders.Add("lehmann-lgb-katalogservice");
-                foreach (var folder in catalogListFolders)
+                File.WriteAllText(Path.Combine(appdataFolder, "catalog-lists.txt"), string.Join(Environment.NewLine, new List<string>() { "fleischmann_katalogservice", "lehmann-lgb-katalogservice" }));
+
+                foreach (var folder in GetCatalogLists())
                 {
                     Directory.CreateDirectory(Path.Combine(appdataFolder, folder));
                 }
@@ -47,16 +46,25 @@ namespace WPE.Trains
 
         internal static IReadOnlyList<string> GetCatalogLists()
         {
-            return catalogListFolders;
+            if (!File.Exists(Path.Combine(appdataFolder, "catalog-lists.txt")))
+            {
+                return new List<string>();
+            }
+            string catalogLists = File.ReadAllText(Path.Combine(appdataFolder, "catalog-lists.txt"));
+            return catalogLists.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         internal static IReadOnlyList<CatalogInfo> GetCatalogListItems(string catalogList)
         {
-            if (!catalogListFolders.Contains(catalogList))
+            if (!GetCatalogLists().Contains(catalogList))
             {
                 return new List<CatalogInfo>();
             }
             string catalogListFolder = Path.Combine(appdataFolder, catalogList);
+            if (!Directory.Exists(catalogListFolder))
+            {
+                Directory.CreateDirectory(catalogListFolder);
+            }
             var folders = Directory.GetDirectories(catalogListFolder).Select(p => Path.GetFileName(p)).ToList();
             List<CatalogInfo> catalogs = new List<CatalogInfo>();
             foreach (var folder in folders)
@@ -81,7 +89,7 @@ namespace WPE.Trains
 
         internal static IReadOnlyList<CatalogImage> GetCatalogImages(string catalogList, string catalogIdentifier)
         {
-            if (!catalogListFolders.Contains(catalogList))
+            if (!GetCatalogLists().Contains(catalogList))
             {
                 return new List<CatalogImage>();
             }
@@ -130,11 +138,15 @@ namespace WPE.Trains
         internal static void SaveCatalogInfo(string catalogList, CatalogInfo info, out string thumbnailUrl)
         {
             thumbnailUrl = info.ThumbnailUrl;
-            if (!catalogListFolders.Contains(catalogList))
+            if (!GetCatalogLists().Contains(catalogList))
             {
                 throw new ArgumentException($"Catalog {catalogList} does not exists");
             }
             string catalogListFolder = Path.Combine(appdataFolder, catalogList);
+            if (!Directory.Exists(catalogListFolder))
+            {
+                Directory.CreateDirectory(catalogListFolder);
+            }
             string catalogFolder = Path.Combine(catalogListFolder, info.Identifier);
             Directory.CreateDirectory(catalogFolder);
             JsonSerializer serializer = new JsonSerializer();
@@ -229,9 +241,13 @@ namespace WPE.Trains
 
         internal static string WriteSiteHtml(string html)
         {
-            string sitePath = Path.Combine(appdataFolder, "site.html");
             File.WriteAllText(sitePath, html);
             return sitePath;
+        }
+
+        internal static bool SiteExists()
+        {
+            return File.Exists(sitePath);
         }
     }
 }

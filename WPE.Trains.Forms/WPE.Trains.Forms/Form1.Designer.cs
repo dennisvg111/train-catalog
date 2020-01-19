@@ -29,36 +29,29 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.LoadGalleriesButton = new System.Windows.Forms.Button();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBoxForeground = new System.Windows.Forms.PictureBox();
-            this.pictureBoxTrain = new System.Windows.Forms.PictureBox();
             this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.linkLabelOpenSite = new System.Windows.Forms.LinkLabel();
+            this.linkLabelOpenExplorer = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxForeground)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTrain)).BeginInit();
             this.SuspendLayout();
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(12, 12);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(255, 21);
-            this.comboBox1.TabIndex = 3;
             // 
             // LoadGalleriesButton
             // 
-            this.LoadGalleriesButton.Location = new System.Drawing.Point(273, 11);
+            this.LoadGalleriesButton.BackColor = System.Drawing.Color.White;
+            this.LoadGalleriesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.LoadGalleriesButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LoadGalleriesButton.Location = new System.Drawing.Point(12, 12);
             this.LoadGalleriesButton.Name = "LoadGalleriesButton";
-            this.LoadGalleriesButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadGalleriesButton.Size = new System.Drawing.Size(100, 23);
             this.LoadGalleriesButton.TabIndex = 5;
             this.LoadGalleriesButton.Text = "Load";
-            this.LoadGalleriesButton.UseVisualStyleBackColor = true;
+            this.LoadGalleriesButton.UseVisualStyleBackColor = false;
             this.LoadGalleriesButton.Click += new System.EventHandler(this.LoadGalleriesButton_Click);
             // 
             // pictureBox1
@@ -78,7 +71,6 @@
             this.pictureBoxForeground.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBoxForeground.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBoxForeground.BackgroundImage = global::WPE.Trains.Forms.Properties.Resources.landscape_foreground;
             this.pictureBoxForeground.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBoxForeground.Location = new System.Drawing.Point(12, 40);
             this.pictureBoxForeground.Name = "pictureBoxForeground";
@@ -86,21 +78,9 @@
             this.pictureBoxForeground.TabIndex = 7;
             this.pictureBoxForeground.TabStop = false;
             // 
-            // pictureBoxTrain
-            // 
-            this.pictureBoxTrain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxTrain.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBoxTrain.BackgroundImage = global::WPE.Trains.Forms.Properties.Resources.landscape_train;
-            this.pictureBoxTrain.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBoxTrain.Location = new System.Drawing.Point(12, 40);
-            this.pictureBoxTrain.Name = "pictureBoxTrain";
-            this.pictureBoxTrain.Size = new System.Drawing.Size(104, 204);
-            this.pictureBoxTrain.TabIndex = 8;
-            this.pictureBoxTrain.TabStop = false;
-            // 
             // textBoxLog
             // 
+            this.textBoxLog.Enabled = false;
             this.textBoxLog.Location = new System.Drawing.Point(13, 251);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
@@ -108,39 +88,61 @@
             this.textBoxLog.Size = new System.Drawing.Size(760, 337);
             this.textBoxLog.TabIndex = 9;
             // 
+            // linkLabelOpenSite
+            // 
+            this.linkLabelOpenSite.AutoSize = true;
+            this.linkLabelOpenSite.Location = new System.Drawing.Point(667, 17);
+            this.linkLabelOpenSite.Name = "linkLabelOpenSite";
+            this.linkLabelOpenSite.Size = new System.Drawing.Size(106, 13);
+            this.linkLabelOpenSite.TabIndex = 10;
+            this.linkLabelOpenSite.TabStop = true;
+            this.linkLabelOpenSite.Text = "Open gallery browser";
+            this.linkLabelOpenSite.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelOpenSite_LinkClicked);
+            // 
+            // linkLabelOpenExplorer
+            // 
+            this.linkLabelOpenExplorer.AutoSize = true;
+            this.linkLabelOpenExplorer.Location = new System.Drawing.Point(577, 17);
+            this.linkLabelOpenExplorer.Name = "linkLabelOpenExplorer";
+            this.linkLabelOpenExplorer.Size = new System.Drawing.Size(84, 13);
+            this.linkLabelOpenExplorer.TabIndex = 11;
+            this.linkLabelOpenExplorer.TabStop = true;
+            this.linkLabelOpenExplorer.Text = "Open in explorer";
+            this.linkLabelOpenExplorer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelOpenExplorer_LinkClicked);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 600);
+            this.Controls.Add(this.linkLabelOpenExplorer);
+            this.Controls.Add(this.linkLabelOpenSite);
             this.Controls.Add(this.textBoxLog);
-            this.Controls.Add(this.pictureBoxTrain);
             this.Controls.Add(this.pictureBoxForeground);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.LoadGalleriesButton);
-            this.Controls.Add(this.comboBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Catalog Browser";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxForeground)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxTrain)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button LoadGalleriesButton;
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBoxForeground;
-        private System.Windows.Forms.PictureBox pictureBoxTrain;
         private System.Windows.Forms.TextBox textBoxLog;
+        private System.Windows.Forms.LinkLabel linkLabelOpenSite;
+        private System.Windows.Forms.LinkLabel linkLabelOpenExplorer;
     }
 }
 

@@ -14,42 +14,48 @@ namespace WPE.Trains.Forms
 {
     public partial class Form1 : Form
     {
+        private Thread siteBuilderThread;
         public Form1()
         {
             InitializeComponent();
-            pictureBoxTrain.Parent = pictureBox1;
-            pictureBoxTrain.BackColor = Color.Transparent;
-            pictureBoxTrain.Top = 0;
-            pictureBoxTrain.Left = 0;
             pictureBoxForeground.Parent = pictureBox1;
             pictureBoxForeground.BackColor = Color.Transparent;
             pictureBoxForeground.Top = 0;
             pictureBoxForeground.Left = 0;
+            LoadGalleriesButton.BackColor = Color.FromArgb(255, 165, 0);
+            linkLabelOpenSite.Enabled = SiteBuilder.SiteExists();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            ShowTrainProgress(SiteBuilder.SiteExists() ? 1 : 0);
         }
 
         private void LoadGalleriesButton_Click(object sender, EventArgs e)
         {
-            SiteBuilder siteBuilder = new SiteBuilder("fleischmann_katalogservice");
+            SiteBuilder siteBuilder = SiteBuilder.GetInstance();
+            if (siteBuilder.IsBusy)
+            {
+                return;
+            }
             siteBuilder.CatalogListLoading += SiteBuilder_CatalogListLoading;
             siteBuilder.FinishedBuilding += SiteBuilder_FinishedBuilding;
-            new Thread(() =>
+            ShowTrainProgress(0);
+            siteBuilderThread = new Thread(() =>
             {
                 siteBuilder.BuildSite();
-            }).Start();
+            });
+            siteBuilderThread.Start();
         }
 
         private void SiteBuilder_FinishedBuilding(string htmlLocation)
         {
                 this.Invoke((MethodInvoker)delegate ()
                 {
-                    pictureBoxTrain.Left = Convert.ToInt32(pictureBox1.Width - pictureBoxTrain.Width);
                     textBoxLog.AppendText("Finished generating HTML");
-                    this.Invalidate();
-                    Process.Start(htmlLocation);
+                    ShowTrainProgress(1);
+                    linkLabelOpenSite.Enabled = SiteBuilder.SiteExists();
+                    SiteBuilder.OpenSite();
                 });
         }
 
@@ -57,10 +63,47 @@ namespace WPE.Trains.Forms
         {
                 this.Invoke((MethodInvoker)delegate ()
                 {
-                    pictureBoxTrain.Left = Convert.ToInt32((pictureBox1.Width - pictureBoxTrain.Width) * progress);
                     textBoxLog.AppendText(message + Environment.NewLine);
-                    this.Invalidate();
+                    ShowTrainProgress(progress);
                 });
+        }
+
+        private void ShowTrainProgress(float progress)
+        {
+            var train = Properties.Resources.landscape_train;
+            var foreground = Properties.Resources.landscape_foreground;
+
+            var position = Convert.ToInt32((foreground.Width - train.Width) * progress);
+
+            var bitmap = new Bitmap(foreground.Width, foreground.Height);
+            bitmap.MakeTransparent();
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                g.DrawImage(Properties.Resources.landscape_train, new Point(position, 0));
+                g.DrawImage(Properties.Resources.landscape_foreground, Point.Empty);
+            }
+            pictureBoxForeground.BackgroundImage = bitmap;
+        }
+
+        private void linkLabelOpenSite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (SiteBuilder.SiteExists())
+            {
+                SiteBuilder.OpenSite();
+            }
+        }
+
+        private void linkLabelOpenExplorer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            SiteBuilder.OpenExplorer();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (siteBuilderThread != null)
+            {
+                siteBuilderThread.Abort();
+            }
         }
     }
 }
