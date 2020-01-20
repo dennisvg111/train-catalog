@@ -48,9 +48,9 @@
             this.LoadGalleriesButton.ForeColor = System.Drawing.SystemColors.ControlText;
             this.LoadGalleriesButton.Location = new System.Drawing.Point(12, 12);
             this.LoadGalleriesButton.Name = "LoadGalleriesButton";
-            this.LoadGalleriesButton.Size = new System.Drawing.Size(100, 23);
+            this.LoadGalleriesButton.Size = new System.Drawing.Size(164, 23);
             this.LoadGalleriesButton.TabIndex = 5;
-            this.LoadGalleriesButton.Text = "Load";
+            this.LoadGalleriesButton.Text = "Build gallery browser";
             this.LoadGalleriesButton.UseVisualStyleBackColor = false;
             this.LoadGalleriesButton.Click += new System.EventHandler(this.LoadGalleriesButton_Click);
             // 
